@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Apply: {{ job.title }}{% endblock %}
+{% block crumb %}Apply: {{ job.title }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-7">
+    <div class="card shadow-sm"><div class="card-body p-4">
+      <h3>Apply for {{ job.title }}</h3>
+      <p class="text-muted">{{ job.company.name }} &middot; {{ job.location }}</p>
+      <div class="alert alert-info">Your skill match for this job: <strong>{{ match.score }}%</strong></div>
+      {% if not profile.resume %}
+        <div class="alert alert-warning">You haven't uploaded a resume yet. <a href="{% url 'profile' %}">Add one to your profile</a> so employers can see it.</div>
+      {% endif %}
+      <form method="post">{% csrf_token %}
+        {% include "partials/form_fields.html" %}
+        <button class="btn btn-primary">Submit application</button>
+        <a href="{% url 'job_detail' job.pk %}" class="btn btn-link">Cancel</a>
+      </form>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

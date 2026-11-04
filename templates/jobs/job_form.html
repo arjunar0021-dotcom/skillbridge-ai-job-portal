@@ -1,0 +1,184 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block crumb %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <h1 class="page-title mb-3">{{ title }}</h1>
+
+        <form method="post" id="jobForm">
+          {% csrf_token %}
+
+          <!-- AI Job Description Generator -->
+          <div class="mb-3 p-3 border rounded bg-light">
+
+            <h5 class="mb-2">
+              <i class="bi bi-stars"></i>
+              AI Job Description Generator
+            </h5>
+
+            <p class="text-muted small mb-3">
+              Generate a professional job description using Ollama AI.
+              Enter your job details first.
+            </p>
+
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              id="generateDescriptionBtn"
+              data-url="{% url 'ai_generate_job_description' %}"
+            >
+              <i class="bi bi-magic"></i>
+              Generate with AI
+            </button>
+
+            <div
+              id="aiLoading"
+              class="text-primary mt-2"
+              style="display: none;"
+            >
+              <span class="spinner-border spinner-border-sm"></span>
+              AI is generating your job description. Please wait...
+            </div>
+
+            <div
+              id="aiError"
+              class="alert alert-danger mt-3 mb-0"
+              style="display: none;"
+              role="alert"
+            ></div>
+
+            <div
+              id="aiSuccess"
+              class="alert alert-success mt-3 mb-0"
+              style="display: none;"
+              role="status"
+            >
+              Job description generated successfully!
+              You can edit it before saving.
+            </div>
+
+          </div>
+
+          <!-- Existing job form fields -->
+          {% include "partials/form_fields.html" %}
+
+          <button type="submit" class="btn btn-primary">
+            Save job
+          </button>
+
+          <a href="{% url 'my_jobs' %}" class="btn btn-link">
+            Cancel
+          </a>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const generateBtn = document.getElementById("generateDescriptionBtn");
+    const jobForm = document.getElementById("jobForm");
+
+    const loadingMessage = document.getElementById("aiLoading");
+    const errorMessage = document.getElementById("aiError");
+    const successMessage = document.getElementById("aiSuccess");
+
+    generateBtn.addEventListener("click", async function () {
+
+        const descriptionField = document.getElementById("id_description");
+        const titleField = document.getElementById("id_title");
+
+        if (!descriptionField || !titleField) {
+            errorMessage.textContent =
+                "Could not find the job title or description field.";
+            errorMessage.style.display = "block";
+            return;
+        }
+
+        if (!titleField.value.trim()) {
+            errorMessage.textContent =
+                "Please enter a job title before generating the description.";
+            errorMessage.style.display = "block";
+            titleField.focus();
+            return;
+        }
+
+        errorMessage.style.display = "none";
+        successMessage.style.display = "none";
+        loadingMessage.style.display = "block";
+
+        generateBtn.disabled = true;
+
+        try {
+
+            const formData = new FormData(jobForm);
+
+            const response = await fetch(generateBtn.dataset.url, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "AI generation failed.");
+            }
+
+            if (!data.description) {
+                throw new Error("The AI returned an empty description.");
+            }
+
+            descriptionField.value = data.description;
+
+            descriptionField.dispatchEvent(
+                new Event("input", { bubbles: true })
+            );
+
+            descriptionField.dispatchEvent(
+                new Event("change", { bubbles: true })
+            );
+
+            successMessage.style.display = "block";
+
+        } catch (error) {
+
+            errorMessage.textContent =
+                error.message || "Something went wrong. Please try again.";
+
+            errorMessage.style.display = "block";
+
+        } finally {
+
+            loadingMessage.style.display = "none";
+            generateBtn.disabled = false;
+
+        }
+
+    });
+
+});
+</script>
+
+{% endblock %}

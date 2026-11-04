@@ -1,0 +1,208 @@
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}skillBridge{% endblock %} &middot; skillBridge</title>
+
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+{% if user.is_authenticated %}
+
+<div class="app-shell">
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar d-none d-lg-flex">
+        {% include "partials/sidebar_nav.html" %}
+    </aside>
+
+    <!-- Mobile Sidebar -->
+    <div class="offcanvas offcanvas-start"
+         tabindex="-1"
+         id="mobileNav"
+         style="width: 270px">
+
+        <div class="offcanvas-body d-flex flex-column p-3">
+            {% include "partials/sidebar_nav.html" %}
+        </div>
+
+    </div>
+
+    <div class="main-col">
+
+        <!-- Top Navigation -->
+        <header class="topbar">
+
+            <button class="icon-btn d-lg-none"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileNav"
+                    aria-label="Menu">
+
+                <i class="bi bi-list fs-4"></i>
+
+            </button>
+
+            <div class="crumbs">
+                My workspace
+                <i class="bi bi-chevron-right" style="font-size:.6rem"></i>
+                <strong>{% block crumb %}{% endblock %}</strong>
+            </div>
+
+            <!-- Job Search -->
+            <form class="top-search"
+                  method="get"
+                  action="{% url 'job_list' %}">
+
+                <i class="bi bi-search"></i>
+
+                <input name="q"
+                       class="form-control"
+                       placeholder="Search jobs, skills, companies">
+
+            </form>
+
+            <!-- User Profile -->
+            <a href="{% url 'profile' %}"
+               title="{{ user.display_name }}">
+
+                {% if user.avatar_url %}
+
+                    <img src="{{ user.avatar_url }}"
+                         class="avatar"
+                         alt="">
+
+                {% else %}
+
+                    <span class="avatar">
+                        {{ user.initials }}
+                    </span>
+
+                {% endif %}
+
+            </a>
+
+        </header>
+
+        <main class="page">
+
+{% else %}
+
+<!-- Public Navigation -->
+<nav class="public-nav">
+
+    <div class="container d-flex align-items-center py-2">
+
+        <a href="{% url 'home' %}">
+            <img src="{% static 'img/logo.png' %}"
+                 alt="skillBridge"
+                 class="brand-logo">
+        </a>
+
+        <div class="ms-4 d-none d-md-block">
+
+            <a class="nav-link"
+               href="{% url 'job_list' %}">
+                Browse jobs
+            </a>
+
+        </div>
+
+        <div class="ms-auto d-flex gap-2">
+
+            <a class="btn btn-outline-secondary btn-sm"
+               href="{% url 'login' %}">
+                Log in
+            </a>
+
+            <a class="btn btn-primary btn-sm"
+               href="{% url 'signup' %}">
+                Sign up
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<main class="container py-4">
+
+{% endif %}
+
+
+<!-- Django Messages -->
+{% for message in messages %}
+
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show py-2"
+         role="alert">
+
+        {{ message }}
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+
+{% endfor %}
+
+
+<!-- Main Page Content -->
+{% block content %}
+{% endblock %}
+
+
+{% if user.is_authenticated %}
+
+        </main>
+
+    </div>
+
+</div>
+
+{% else %}
+
+</main>
+
+<footer class="text-center py-4 small">
+    &copy; skillBridge &middot; Connecting skills to opportunities
+</footer>
+
+{% endif %}
+
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Page-specific JavaScript -->
+{% block scripts %}
+{% endblock %}
+
+</body>
+</html>

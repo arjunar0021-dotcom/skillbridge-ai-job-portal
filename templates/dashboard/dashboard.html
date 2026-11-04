@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="m-0">{{ user.get_role_display }} dashboard</h3>
+  {% if user.is_employer or user.is_admin_role %}
+    <a href="{% url 'export_csv' %}" class="btn btn-outline-secondary btn-sm">Download applications (CSV)</a>
+  {% endif %}
+</div>
+
+<div class="row g-3 mb-4">
+  {% for label, value in stats %}
+    <div class="col-6 col-md-4 col-xl-2">
+      <div class="card stat-card shadow-sm text-center p-3">
+        <div class="display-6">{{ value }}</div>
+        <div class="text-muted small">{{ label }}</div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="row g-3 mb-4">
+  {% for c in charts %}
+    <div class="col-12 col-lg-{% if charts|length == 1 %}6{% elif charts|length == 2 %}6{% else %}4{% endif %}">
+      <div class="card shadow-sm"><div class="card-body">
+        <h6 class="text-muted">{{ c.title }}</h6>
+        <div class="chart-box"><canvas id="{{ c.id }}"></canvas></div>
+      </div></div>
+    </div>
+  {% endfor %}
+</div>
+
+{# ------------------------------------------------ admin ------------------------------------------------ #}
+{% if user.is_admin_role %}
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h5>Newest users</h5>
+      <ul class="list-group list-group-flush">
+        {% for u in recent_users %}<li class="list-group-item d-flex justify-content-between">{{ u.username }}<span class="badge text-bg-info">{{ u.get_role_display }}</span></li>{% endfor %}
+      </ul>
+      <a href="{% url 'manage_users' %}" class="btn btn-sm btn-outline-primary mt-2">Manage users</a>
+    </div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h5>Latest job postings</h5>
+      <ul class="list-group list-group-flush">
+        {% for j in recent_jobs %}<li class="list-group-item"><a href="{% url 'job_detail' j.pk %}">{{ j.title }}</a> <span class="text-muted small">&middot; {{ j.company.name }}</span></li>{% endfor %}
+      </ul>
+    </div></div>
+  </div>
+</div>
+
+{# ---------------------------------------------- employer ----------------------------------------------- #}
+{% elif user.is_employer %}
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h5>Recent applicants</h5>
+      <ul class="list-group list-group-flush">
+        {% for a in recent_apps %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span><a href="{% url 'application_detail' a.pk %}">{{ a.applicant.user.display_name }}</a> <span class="text-muted small">&rarr; {{ a.job.title }}</span></span>
+            <span class="badge text-bg-{{ a.badge_class }}">{{ a.get_status_display }}</span>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">No applicants yet.</li>{% endfor %}
+      </ul>
+    </div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h5>Upcoming interviews</h5>
+      <ul class="list-group list-group-flush">
+        {% for i in upcoming %}
+          <li class="list-group-item">{{ i.scheduled_at|date:"d M, H:i" }} &ndash; {{ i.application.applicant.user.display_name }} <span class="text-muted small">({{ i.application.job.title }})</span></li>
+        {% empty %}<li class="list-group-item text-muted">Nothing scheduled.</li>{% endfor %}
+      </ul>
+    </div></div>
+  </div>
+</div>
+
+{# ------------------------------------------------ seeker ----------------------------------------------- #}
+{% else %}
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm mb-3"><div class="card-body">
+      <h5>Profile completeness</h5>
+      <div class="progress mb-2" style="height: 14px"><div class="progress-bar" style="width: {{ profile.completeness }}%"></div></div>
+      <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-primary">Improve my profile</a>
+    </div></div>
+    <div class="card shadow-sm"><div class="card-body">
+      <h5>Upcoming interviews</h5>
+      <ul class="list-group list-group-flush">
+        {% for i in upcoming %}
+          <li class="list-group-item">{{ i.scheduled_at|date:"d M, H:i" }} &ndash; {{ i.application.job.title }} <span class="text-muted small">({{ i.application.job.company.name }})</span></li>
+        {% empty %}<li class="list-group-item text-muted">Nothing scheduled.</li>{% endfor %}
+      </ul>
+    </div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h5>Top matches for you</h5>
+      <ul class="list-group list-group-flush">
+        {% for r in top_matches %}
+          <li class="list-group-item d-flex justify-content-between">
+            <a href="{% url 'job_detail' r.job.pk %}">{{ r.job.title }}</a>
+            <span class="badge text-bg-success">{{ r.score }}%</span>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">Add skills to your profile to see matches.</li>{% endfor %}
+      </ul>
+      <a href="{% url 'recommended' %}" class="btn btn-sm btn-outline-primary mt-2">See all recommendations</a>
+    </div></div>
+  </div>
+</div>
+{% endif %}
+
+{{ charts|json_script:"charts-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+{% endblock %}

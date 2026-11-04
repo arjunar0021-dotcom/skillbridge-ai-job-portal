@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Find your next role{% endblock %}
+{% block content %}
+<section class="hero-sb p-4 p-md-5 mb-4">
+  <div class="row align-items-center position-relative" style="z-index:1">
+    <div class="col-12 col-lg-8">
+      <div class="eyebrow" style="color:#9fb0ee">Your professional bridge</div>
+      <h1>Close the gap between your skills and your <span class="text-mint">next role.</span></h1>
+      <p class="lead mt-3 mb-4" style="color:#d6dcf7">Search jobs, build your profile and get matched by skills &mdash; with a clear view of what to learn next.</p>
+      <form method="get" action="{% url 'job_list' %}" class="row g-2">
+        <div class="col-12 col-md-5"><input name="q" class="form-control form-control-lg border-0" placeholder="Job title, skill or company"></div>
+        <div class="col-12 col-md-4"><input name="location" class="form-control form-control-lg border-0" placeholder="Location"></div>
+        <div class="col-12 col-md-3 d-grid"><button class="btn btn-lg btn-teal">Search jobs</button></div>
+      </form>
+      <div class="mt-4">
+        <a href="{% url 'signup' %}" class="btn btn-light me-2">Create an account</a>
+        <a href="{% url 'login' %}" class="btn btn-outline-light">Log in</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="row g-3 mb-4 text-center">
+  {% for label, value in stats %}
+    <div class="col-4"><div class="card-soft stat-card"><div class="value">{{ value }}</div><div class="hint">{{ label }}</div></div></div>
+  {% endfor %}
+</div>
+
+<div class="section-head">
+  <h5>Latest jobs</h5>
+  <a href="{% url 'job_list' %}" class="link-sm">View all &rarr;</a>
+</div>
+<div class="row g-3">
+  {% for job in latest_jobs %}
+    <div class="col-12 col-md-6 col-lg-4">{% include "partials/job_card.html" %}</div>
+  {% empty %}
+    <p class="text-muted">No jobs posted yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

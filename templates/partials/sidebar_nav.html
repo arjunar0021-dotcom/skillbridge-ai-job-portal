@@ -1,0 +1,55 @@
+{% load static %}
+{% with u=request.resolver_match.url_name %}
+<a class="brand" href="{% url 'dashboard' %}"><img src="{% static 'img/logo.png' %}" alt="skillBridge" class="brand-logo"></a>
+
+<div class="nav-label">WORKSPACE</div>
+<nav>
+  <a class="side-link {% if u == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="bi bi-grid-1x2"></i> Overview</a>
+
+  {% if user.is_seeker %}
+    <a class="side-link {% if u == 'job_list' or u == 'job_detail' or u == 'apply' %}active{% endif %}" href="{% url 'job_list' %}"><i class="bi bi-search"></i> Find jobs</a>
+    <a class="side-link {% if u == 'recommended' %}active{% endif %}" href="{% url 'recommended' %}"><i class="bi bi-stars"></i> Recommended</a>
+    <a class="side-link {% if u == 'my_applications' %}active{% endif %}" href="{% url 'my_applications' %}"><i class="bi bi-send"></i> Applications {% if nav_app_count %}<span class="side-badge">{{ nav_app_count }}</span>{% endif %}</a>
+    <a class="side-link {% if u == 'saved_jobs' %}active{% endif %}" href="{% url 'saved_jobs' %}"><i class="bi bi-bookmark"></i> Saved jobs {% if nav_saved_count %}<span class="side-badge">{{ nav_saved_count }}</span>{% endif %}</a>
+    <a class="side-link {% if u == 'my_interviews' %}active{% endif %}" href="{% url 'my_interviews' %}"><i class="bi bi-calendar-event"></i> Interviews</a>
+    <a class="side-link {% if u == 'profile' or u == 'profile_edit' %}active{% endif %}" href="{% url 'profile' %}"><i class="bi bi-person"></i> My profile</a>
+
+  {% elif user.is_employer %}
+    <a class="side-link {% if u == 'my_jobs' or u == 'job_update' or u == 'job_delete' or u == 'job_applicants' or u == 'application_detail' %}active{% endif %}" href="{% url 'my_jobs' %}"><i class="bi bi-briefcase"></i> My jobs</a>
+    <a class="side-link {% if u == 'job_create' %}active{% endif %}" href="{% url 'job_create' %}"><i class="bi bi-plus-circle"></i> Post a job</a>
+    <a class="side-link {% if u == 'job_list' or u == 'job_detail' %}active{% endif %}" href="{% url 'job_list' %}"><i class="bi bi-search"></i> Browse jobs</a>
+    <a class="side-link {% if u == 'profile' %}active{% endif %}" href="{% url 'profile' %}"><i class="bi bi-building"></i> Company</a>
+
+  {% else %}
+    <a class="side-link {% if u == 'manage_users' or u == 'user_edit' %}active{% endif %}" href="{% url 'manage_users' %}"><i class="bi bi-people"></i> Users</a>
+    <a class="side-link {% if u == 'job_list' or u == 'job_detail' %}active{% endif %}" href="{% url 'job_list' %}"><i class="bi bi-search"></i> Browse jobs</a>
+    <a class="side-link" href="{% url 'admin:index' %}"><i class="bi bi-shield-lock"></i> Django admin</a>
+  {% endif %}
+</nav>
+
+<div class="mt-auto">
+  {% if user.is_seeker %}
+    <div class="guide-card">
+      <strong><i class="bi bi-lightbulb"></i> A little guidance?</strong>
+      See which skills would unlock more of your matches.
+      <a href="{% url 'recommended' %}" class="d-block mt-1 fw-semibold" style="color: var(--sb-teal)">Skill-gap analysis &rarr;</a>
+    </div>
+  {% elif user.is_employer %}
+    <div class="guide-card">
+      <strong><i class="bi bi-lightbulb"></i> Better matches</strong>
+      Add required skills to each job so the right candidates find it.
+    </div>
+  {% endif %}
+
+  <div class="side-user">
+    {% if user.avatar_url %}<img src="{{ user.avatar_url }}" class="avatar" alt="">{% else %}<span class="avatar">{{ user.initials }}</span>{% endif %}
+    <div>
+      <div class="name">{{ user.display_name }}</div>
+      <div class="role">{{ user.get_role_display }}</div>
+    </div>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+      <button class="icon-btn" title="Log out"><i class="bi bi-box-arrow-right"></i></button>
+    </form>
+  </div>
+</div>
+{% endwith %}

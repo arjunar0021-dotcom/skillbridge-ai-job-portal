@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}My profile{% endblock %}
+{% block crumb %}My profile{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Your professional story</div>
+    <h1 class="page-title">My profile</h1>
+    <div class="page-sub">Make your experience visible. Give great matches something to work with.</div>
+  </div>
+</div>
+
+{# ---------------------------------------------------------- header card #}
+<div class="card-soft p-0 mb-3">
+  <div class="p-4 d-flex flex-wrap align-items-center gap-3">
+    {% if profile.avatar %}<img src="{{ profile.avatar.url }}" class="avatar avatar-lg" alt="">{% else %}<span class="avatar avatar-lg">{{ user.initials }}</span>{% endif %}
+    <div class="flex-grow-1">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <h2 class="mb-0" style="font-size:1.5rem">{{ user.display_name }}</h2>
+        {% if profile.open_to_work %}<span class="pill pill-open">Open to work</span>{% endif %}
+      </div>
+      <div class="text-muted">{{ profile.headline|default:"Add a headline so employers know what you do." }}</div>
+      <div class="job-meta mt-1">
+        {% if profile.location %}<i class="bi bi-geo-alt"></i> {{ profile.location }} &nbsp;{% endif %}
+        {% if user.email %}<i class="bi bi-envelope"></i> {{ user.email }} &nbsp;{% endif %}
+        {% if profile.linkedin_url %}<a href="{{ profile.linkedin_url }}" target="_blank" rel="noopener" class="link-sm">LinkedIn <i class="bi bi-box-arrow-up-right"></i></a>{% endif %}
+      </div>
+    </div>
+    <a href="{% url 'profile_edit' %}" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> Edit profile</a>
+  </div>
+  <div class="px-4 py-2 d-flex align-items-center gap-3 flex-wrap" style="background:var(--sb-tint); border-top:1px solid var(--sb-border); border-radius:0 0 .9rem .9rem">
+    <span class="small fw-semibold"><i class="bi bi-check-circle"></i> Your profile is {{ profile.completeness }}% complete</span>
+    <div class="progress flex-grow-1" style="max-width:320px"><div class="progress-bar" style="width: {{ profile.completeness }}%"></div></div>
+    {% if profile.next_step %}<span class="job-meta">One more step: {{ profile.next_step }}</span>{% endif %}
+    <a href="{% url 'profile_edit' %}" class="link-sm ms-auto">Update profile</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-8">
+    <div class="card-soft mb-3">
+      <div class="section-head"><h5>About me</h5><a href="{% url 'profile_edit' %}" class="link-sm">Edit &rarr;</a></div>
+      <p class="mb-0" style="white-space: pre-line">{{ profile.bio|default:"Tell employers a little about yourself." }}</p>
+    </div>
+
+    <div class="card-soft mb-3">
+      <div class="section-head"><h5>Experience</h5><a href="{% url 'profile_edit' %}" class="link-sm">Edit &rarr;</a></div>
+      <div class="d-flex gap-3 align-items-center">
+        <span class="co-avatar co-avatar-lg"><i class="bi bi-briefcase"></i></span>
+        <div>
+          <div class="fw-semibold">{{ profile.headline|default:"Professional" }}</div>
+          <div class="job-meta">{{ profile.experience_years }} year{{ profile.experience_years|pluralize }} of experience</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-soft">
+      <div class="section-head"><h5>Education</h5><a href="{% url 'profile_edit' %}" class="link-sm">Edit &rarr;</a></div>
+      <div class="d-flex gap-3 align-items-center">
+        <span class="co-avatar co-avatar-lg"><i class="bi bi-mortarboard"></i></span>
+        <div class="fw-semibold">{{ profile.education|default:"Add your education" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card-soft mb-3">
+      <div class="section-head"><h5>Resume</h5></div>
+      <div class="job-meta mb-2">Used for your applications and skill matching.</div>
+      {% if profile.resume %}
+        <div class="d-flex align-items-center gap-2 p-2 rounded" style="background:#f6f7fb">
+          <i class="bi bi-file-earmark-text fs-4" style="color:var(--sb-navy)"></i>
+          <div class="flex-grow-1 small fw-semibold text-truncate">{{ profile.resume.name|cut:"resumes/" }}</div>
+          <a href="{{ profile.resume.url }}" target="_blank" class="icon-btn" title="Download"><i class="bi bi-download"></i></a>
+        </div>
+        <a href="{% url 'profile_edit' %}" class="link-sm d-block mt-2">Replace resume</a>
+      {% else %}
+        <a href="{% url 'profile_edit' %}" class="d-block text-center p-4 rounded" style="border:1.5px dashed #c9cde6; color:var(--sb-navy)">
+          <i class="bi bi-cloud-arrow-up fs-3 d-block"></i>
+          <span class="fw-semibold small">Upload your resume</span>
+          <span class="d-block job-meta">PDF or DOCX, up to 2 MB</span>
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="card-soft mb-3">
+      <div class="section-head"><h5>Skills</h5><a href="{% url 'profile_edit' %}" class="link-sm">Edit &rarr;</a></div>
+      <div class="job-meta mb-2">These skills help explain your job matches.</div>
+      {% for skill in profile.skills.all %}<span class="chip">{{ skill.name }}</span>{% empty %}<span class="text-muted small">No skills added yet.</span>{% endfor %}
+      {% if next_skill %}
+        <div class="mt-3 pt-3 border-top">
+          <div class="fw-semibold small"><i class="bi bi-lightbulb" style="color:var(--sb-teal)"></i> Build your next skill</div>
+          <div class="job-meta">{{ next_skill.0 }} appears in {{ next_skill.1 }} role{{ next_skill.1|pluralize }} that match you.</div>
+          <a href="{% url 'recommended' %}" class="link-sm">Explore skill gaps &rarr;</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="card-soft">
+      <div class="section-head"><h5>Job preferences</h5><a href="{% url 'profile_edit' %}" class="link-sm">Edit &rarr;</a></div>
+      <div class="job-meta">Target role</div><div class="fw-semibold mb-2">{{ profile.target_role|default:"-" }}</div>
+      <div class="job-meta">Workplace</div><div class="fw-semibold mb-2">{{ profile.get_workplace_pref_display|default:"-" }}</div>
+      <div class="job-meta">Salary expectation</div><div class="fw-semibold">{{ profile.expected_salary|default:"-" }}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Saved jobs{% endblock %}
+{% block crumb %}Saved jobs{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Keep track</div>
+    <h1 class="page-title">Saved jobs</h1>
+    <div class="page-sub">Roles you bookmarked to come back to.</div>
+  </div>
+</div>
+<div class="row g-3">
+  {% for job in jobs %}
+    <div class="col-12 col-md-6 col-xl-4">{% include "partials/job_card.html" %}</div>
+  {% empty %}
+    <div class="col-12"><div class="card-soft text-center text-muted py-5">Nothing saved yet. Tap the bookmark on any job to keep it here.<br><a href="{% url 'job_list' %}" class="btn btn-primary mt-3">Find jobs</a></div></div>
+  {% endfor %}
+</div>
+{% endblock %}
