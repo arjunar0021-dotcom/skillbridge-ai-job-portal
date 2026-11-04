@@ -62,6 +62,7 @@ skillBridge aims to simplify this process by providing a centralised platform wh
 - Generates professional job descriptions based on employer-provided job information.
 - Automatically fills the job description field.
 - Allows employers to review and edit generated descriptions before publishing.
+- The AI job description generator requires Ollama to be installed and running locally. It is available when the application is run in an environment with the configured Ollama service.
 
 ### Admin Module
 - Administrative access to the application.
