@@ -170,13 +170,12 @@ Install the following software:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-```
+git clone https://github.com/arjunar0021-dotcom/skillbridge-ai-job-portal.git
 
 Navigate to the project directory:
 
 ```bash
-cd jobportal
+cd skillbridge-ai-job-portal```
 ```
 
 ### Step 2: Create a Virtual Environment
@@ -310,6 +309,17 @@ Check migration status:
 ```bash
 python manage.py showmigrations
 ```
+## Demo Login Credentials
+
+Use the following credentials to explore the application:
+
+| Role | Username | Password |
+|---|---|---|
+| Administrator | admin | Admin@123 |
+| Employer | employer1 | Employer@123 |
+| Job Seeker | seeker1 | Seeker@123 |
+
+
 
 ## 10. Screenshots
 
