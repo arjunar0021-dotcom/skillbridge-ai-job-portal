@@ -171,12 +171,7 @@ Install the following software:
 
 ```bash
 git clone https://github.com/arjunar0021-dotcom/skillbridge-ai-job-portal.git
-
-Navigate to the project directory:
-
-```bash
-cd skillbridge-ai-job-portal```
-```
+cd skillbridge-ai-job-portal
 
 ### Step 2: Create a Virtual Environment
 
