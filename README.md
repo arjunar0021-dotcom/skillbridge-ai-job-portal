@@ -6,6 +6,9 @@ skillBridge is a Django-based job portal designed to connect job seekers with em
 
 The platform provides separate workspaces for administrators, employers, and job seekers, making recruitment and job searching easier through a unified web application.
 
+🌐 **Live Demo:** https://arjunm1112.pythonanywhere.com/ 
+💻 **GitHub Repository:** https://github.com/arjunar0021-dotcom/skillbridge-ai-job-portal.git
+
 ---
 
 ## 1. Project Overview
