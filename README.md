@@ -368,9 +368,12 @@ The primary objective of skillBridge is to create an intelligent and user-friend
 **Developed Using:** Python, Django, Bootstrap, SQLite and Ollama.
 
 **GitHub Repository:** [(https://github.com/arjunar0021-dotcom/skillbridge-ai-job-portal.git)]
+
 **Developer:** Arjun S Murali
 
 **Academic Project:** Entri Final Project
+
+
 **Deployment Link:**[(https://arjunm1112.pythonanywhere.com/)]
 
 ---
